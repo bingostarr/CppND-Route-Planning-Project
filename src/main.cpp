@@ -9,10 +9,26 @@
 #include "route_planner.h"
 
 using namespace std::experimental;
-static const float COORD_DEF_START = 10;
-static const float COORD_DEF_END = 90;
-static const float COORD_MIN = 100;
-static const float COORD_MAX = 100;
+
+static const float COORD_DEF = 50.0;
+static const float COORD_MIN = 0.0;
+static const float COORD_MAX = 100.0;
+
+void ReadValueFromUserInput(float &var, const std::string& var_name) {
+  float value = COORD_DEF;
+
+  std::cout << "Please enter value for <" + var_name + ">: ";
+  std::cin >> value;
+
+  while (std::cin.fail() || value < COORD_MIN || value > COORD_MAX) {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Wrong input value (" << COORD_MIN << " <= val <= " << COORD_MAX << "). Please try again: ";
+    std::cin >> value;
+  }
+
+  var = value;
+}
 
 static std::optional<std::vector<std::byte>> ReadFile(const std::string &path)
 {   
@@ -59,29 +75,12 @@ int main(int argc, const char **argv)
     // TODO 1: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
     // user input for these values using std::cin. Pass the user input to the
     // RoutePlanner object below in place of 10, 10, 90, 90.
-    char c;
-    float start_x, start_y, end_x, end_y;
-    std::cout << "\nEnter starting coordinates x,y: ";
-    std::cin >> start_x >> c >> start_y;
-    if (!std::cin) {
-        start_x = COORD_DEF_START; // if the input operation fails, fall back to default values
-        start_y = COORD_DEF_START;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    start_x = ((start_x > COORD_MAX) || (start_x < COORD_MIN)) ? COORD_DEF_START : start_x;
-    start_y = ((start_y > COORD_MAX) || (start_y < COORD_MIN)) ? COORD_DEF_START : start_y;
+    float start_x = COORD_DEF, start_y = COORD_DEF, end_x = COORD_DEF, end_y = COORD_DEF;
 
-    std::cout << "\nEnter ending coordinates x,y: ";
-    std::cin >> end_x >> c >> end_y;
-    if (!std::cin) {
-        end_x = COORD_DEF_END; // if the input operation fails, fall back to default values
-        end_y = COORD_DEF_END;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    end_x = ((end_x > COORD_MAX) || (end_x < COORD_MIN)) ? COORD_DEF_START : end_x;
-    end_y = ((end_y > COORD_MAX) || (end_y < COORD_MIN)) ? COORD_DEF_START : end_y;
+    ReadValueFromUserInput(start_x, "start_x");
+    ReadValueFromUserInput(start_y, "start_y");
+    ReadValueFromUserInput(end_x, "end_x");
+    ReadValueFromUserInput(end_y, "end_y");
 
     std::cout << "\nUsing starting coordinates: " << start_x << "," << start_y << std::endl;
     std::cout << "Using ending coordinates: " << end_x << "," << end_y << std::endl;
